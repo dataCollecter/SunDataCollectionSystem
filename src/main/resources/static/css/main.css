@@ -1,0 +1,28 @@
+body{
+	 font-family:Arial,Helvetica,sans-serif;
+       vertical-align:middle;
+       font-weight:normal
+}
+
+.hide{
+	display: hide;
+}
+.loginout{
+	width:100%;
+	position: absolute!important;
+	bottom:0px;	
+}
+.item{
+	margin-top:15px;
+}
+.table-bordered>thead>tr>th, 
+.table-bordered>tbody>tr>th, 
+.table-bordered>tfoot>tr>th, 
+.table-bordered>thead>tr>td, 
+.table-bordered>tbody>tr>td, 
+.table-bordered>tfoot>tr>td{
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	text-align: left;
+}

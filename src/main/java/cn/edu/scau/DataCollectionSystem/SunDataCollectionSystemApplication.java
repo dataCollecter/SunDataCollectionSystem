@@ -1,4 +1,4 @@
-package cn.edu.scau.datacollectionsystem;
+package cn.edu.scau.DataCollectionSystem;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package cn.edu.scau.datacollectionsystem;
+package cn.edu.scau.DataCollectionSystem;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
