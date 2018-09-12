@@ -6,17 +6,22 @@ import lombok.experimental.Accessors;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "User")
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 @Getter
 @Setter
 @Accessors(chain = true)
+@Entity
 public class User {
 
-    @Field
+    @Id
     private String userid;
 
-    @Field
     private String password;
+
+    public User() {
+    }
 
     public User(String userid, String password) {
         this.userid = userid;

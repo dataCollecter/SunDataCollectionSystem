@@ -4,6 +4,8 @@ import cn.edu.scau.DataCollectionSystem.dao.EmailDao;
 import cn.edu.scau.DataCollectionSystem.entity.Email;
 import cn.edu.scau.DataCollectionSystem.service.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,32 +22,33 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public List<Email> getAllContacts() {
-        return emailDao.getContactList();
+        return emailDao.findAll();
     }
 
     @Override
-    public List<Email> getContacts(int skip, int limit) {
-        return emailDao.getContactList(skip, limit);
+    public List<Email> getContacts(int page, int pageSize) {
+        Page<Email> r = emailDao.findAll(PageRequest.of(page, pageSize));
+        return r.getContent();
     }
 
     @Override
     public boolean addContact(Email newEmail) {
         //查重
-        if(emailDao.findContact(newEmail.getName()) != null)
+        if(emailDao.findByName(newEmail.getName()) != null)
             return false;
 
         newEmail.setEnable(true);
-        emailDao.insert(newEmail);
+        emailDao.save(newEmail);
 
         return true;
     }
 
     @Override
-    public boolean deleteContact(String name) {
+    public void deleteContact(String name) {
         //判断联系人是否存在
-        if(emailDao.findContact(name) == null)
-            return false;
-
-        return emailDao.deleteContact(name);
+        Email email = emailDao.findByName(name);
+        if(email == null)
+            return;
+        emailDao.delete(email);
     }
 }

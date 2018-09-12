@@ -80,7 +80,7 @@ class SunRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-        User u = userDao.findAll(User.class).get(0);
+        User u = userDao.findAll().get(0);
         return new SimpleAuthenticationInfo(
                 "", //个人系统验证不需要用户名
                 u.getPassword(),

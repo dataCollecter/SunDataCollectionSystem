@@ -1,10 +1,13 @@
 package cn.edu.scau.DataCollectionSystem.service.impl;
 
-import cn.edu.scau.DataCollectionSystem.dao.FollowPathDao;
 import cn.edu.scau.DataCollectionSystem.dao.SpiderDao;
 import cn.edu.scau.DataCollectionSystem.entity.Spider;
 import cn.edu.scau.DataCollectionSystem.service.SpiderManagementService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -18,62 +21,52 @@ import java.util.regex.Pattern;
 @Service
 public class SpiderManagementServiceImpl implements SpiderManagementService {
 
+    private static Logger log = LoggerFactory.getLogger(SpiderManagementService.class);
+
     private final SpiderDao spiderDao;
 
-    private final FollowPathDao followPathDao;
-
     @Autowired
-    public SpiderManagementServiceImpl(SpiderDao spiderDao, FollowPathDao followPathDao) {
+    public SpiderManagementServiceImpl(SpiderDao spiderDao) {
         this.spiderDao = spiderDao;
-        this.followPathDao = followPathDao;
     }
 
     @Override
-    public List<Spider> getSpiderList(int skip, int limit) {
-        return spiderDao.getSpider(skip, limit);
+    public List<Spider> getSpiderList(int page, int pageSize) {
+        Page<Spider> r = spiderDao.findAll(PageRequest.of(page, pageSize));
+        return r.getContent();
     }
 
     public boolean removeSpider(String name) {
-        if (spiderDao.findSpider(name) == null)
+        Spider spider = spiderDao.findBySpiderName(name);
+        if (spider == null)
             return false;
 
-        spiderDao.removeSpider(name);
-        followPathDao.removeFollowPath(name);
-        StringBuilder context = new StringBuilder();
-        try {
-            File file = new File("/root/start_spider/" + name + ".sh");
-            if (file.exists())
-                file.delete();
-            BufferedReader reader = new BufferedReader(new FileReader("/var/spool/cron/crontabs/root"));
-            String line;
-            Pattern pattern = Pattern.compile("/root/start_spider/" + name + ".sh");
-            Matcher matcher;
-            while ((line = reader.readLine()) != null) {
-                matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    continue;
-                }
-                context.append(line).append("\n");
-            }
-            reader.close();
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("/var/spool/cron/crontabs/root"));
-            bufferedWriter.write(context.toString());
-            bufferedWriter.flush();
-            bufferedWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        spiderDao.delete(spider);
+
+//        deleteSpider(name);
+
         return true;
     }
 
     public boolean createSpider(String name, String url, String title1, String date1, String title2, String date2) {
-
-        if (spiderDao.findSpider(name) != null)
+        if (spiderDao.findBySpiderName(name) != null)
             return false;
 
-        String shpath = "/root/start_spider/" + name + ".sh";
+//        if (!createSpider(name))
+//            return false;
+
+        Date time = new Date();
+        DateFormat d2 = DateFormat.getDateTimeInstance();
+        String createDate = d2.format(time);
+        Spider spider = new Spider(name, url, createDate, title1, date1, title2, date2);
+        spiderDao.save(spider);
+        return true;
+    }
+
+    private boolean createSpider(String spiderName) {
+        String shpath = "/root/start_spider/" + spiderName + ".sh";
         String timing_path = "/var/spool/cron/crontabs/root";
-        String body = "#!/bin/sh\ncd /root/dataCollecter\nscrapy crawl test -a spider_name=" + name + "\n";
+        String body = "#!/bin/sh\ncd /root/dataCollecter\nscrapy crawl test -a spider_name=" + spiderName + "\n";
         try {
             Random random = new Random();
             File file = new File(shpath);
@@ -92,16 +85,37 @@ public class SpiderManagementServiceImpl implements SpiderManagementService {
             Runtime.getRuntime().exec("chmod 777 " + shpath);
             Runtime.getRuntime().exec(shpath);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error At Create Spider : ", e);
             return false;
         }
-
-        Date time = new Date();
-        DateFormat d2 = DateFormat.getDateTimeInstance();
-        String createDate = d2.format(time);
-        Spider spider = new Spider(name, url, createDate, title1, date1, title2, date2);
-        spiderDao.insert(spider);
         return true;
+    }
+
+    private void deleteSpider(String spiderName) {
+        StringBuilder context = new StringBuilder();
+        try {
+            File file = new File("/root/start_spider/" + spiderName + ".sh");
+            if (file.exists())
+                file.delete();
+            BufferedReader reader = new BufferedReader(new FileReader("/var/spool/cron/crontabs/root"));
+            String line;
+            Pattern pattern = Pattern.compile("/root/start_spider/" + spiderName + ".sh");
+            Matcher matcher;
+            while ((line = reader.readLine()) != null) {
+                matcher = pattern.matcher(line);
+                if (matcher.find()) {
+                    continue;
+                }
+                context.append(line).append("\n");
+            }
+            reader.close();
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("/var/spool/cron/crontabs/root"));
+            bufferedWriter.write(context.toString());
+            bufferedWriter.flush();
+            bufferedWriter.close();
+        } catch (IOException e) {
+            log.error("Error At Delete Spider : ", e);
+        }
     }
 
 }

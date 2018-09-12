@@ -27,10 +27,8 @@ public class SpiderController {
 
     @RequestMapping(value = "/get")
     public SpiderList getSpider(@RequestBody PagingRequest request) {
-        int limit = request.getPageSize();
-        int skip = (request.getPageNum() - 1) * limit;
-        List<Spider> data = spiderService.getSpiderList(skip, limit);
-
+        List<Spider> data =
+                spiderService.getSpiderList(request.getPageNum() - 1, request.getPageSize());
         return new SpiderList().convertTo(data);
     }
 

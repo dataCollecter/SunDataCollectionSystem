@@ -16,7 +16,7 @@ public interface ContactService {
      * 获取联系人列表
      * @return
      */
-    List<Email> getContacts(int skip, int limit);
+    List<Email> getContacts(int page, int pageSize);
 
     /**
      * 添加联系人
@@ -30,5 +30,5 @@ public interface ContactService {
      * @param name  要删除的联系人
      * @return  删除结果
      */
-    boolean deleteContact(String name);
+    void deleteContact(String name);
 }

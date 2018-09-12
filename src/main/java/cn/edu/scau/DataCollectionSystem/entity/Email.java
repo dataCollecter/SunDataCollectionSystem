@@ -6,19 +6,25 @@ import lombok.experimental.Accessors;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "Email")
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 @Getter
 @Setter
 @Accessors(chain = true)
+@Entity
 public class Email {
 
-    @Field
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     private String address;
 
-    @Field
     private String name;
 
-    @Field
     private boolean enable;
 
     public Email() {

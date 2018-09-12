@@ -6,35 +6,40 @@ import lombok.experimental.Accessors;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "Spider")
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 @Getter
 @Setter
 @Accessors(chain = true)
+@Entity
 public class Spider {
 
-    @Field
-    private String spider_name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    @Field
+    private String spiderName;
+
     private String url;
 
-    @Field
     private String createDate;
 
-    @Field
     private String title1;
 
-    @Field
     private String date1;
 
-    @Field
     private String title2;
 
-    @Field
     private String date2;
 
-    public Spider(String spider_name, String url, String createDate, String title1, String date1, String title2, String date2) {
-        this.spider_name = spider_name;
+    public Spider() {
+    }
+
+    public Spider(String spiderName, String url, String createDate, String title1, String date1, String title2, String date2) {
+        this.spiderName = spiderName;
         this.url = url;
         this.createDate = createDate;
         this.title1 = title1;

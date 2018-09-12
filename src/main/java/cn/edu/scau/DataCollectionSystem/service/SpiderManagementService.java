@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface SpiderManagementService {
 
-    List<Spider> getSpiderList(int skip, int limit);
+    List<Spider> getSpiderList(int page, int pageSize);
 
     boolean removeSpider(String name);
 

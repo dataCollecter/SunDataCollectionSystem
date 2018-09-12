@@ -14,6 +14,9 @@ public class Contact {
 
     private String mail;
 
+    public Contact() {
+    }
+
     public Contact(Email email) {
         this.name = email.getName();
         this.mail = email.getAddress();

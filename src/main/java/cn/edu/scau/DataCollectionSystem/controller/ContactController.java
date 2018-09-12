@@ -43,9 +43,8 @@ public class ContactController {
 
     @RequestMapping(value = "/delete")
     public BaseResponse deleteContact(@RequestBody DeleteInfo request) {
-        return contactService.deleteContact(request.getName()) ?
-                new BaseResponse().setCode(10) :
-                new BaseResponse().setCode(11);
+        contactService.deleteContact(request.getName());
+        return new BaseResponse().setCode(10);
     }
 
 }

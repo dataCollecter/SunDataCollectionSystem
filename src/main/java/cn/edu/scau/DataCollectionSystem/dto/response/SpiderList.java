@@ -39,7 +39,7 @@ public class SpiderList implements Convertible<SpiderList, Spider> {
         private String time;
 
         SpiderInfo(Spider spider) {
-            this.name = spider.getSpider_name();
+            this.name = spider.getSpiderName();
             this.url = spider.getUrl();
             this.time = spider.getCreateDate();
         }
